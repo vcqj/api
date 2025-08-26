@@ -1,8 +1,16 @@
 FROM node:20-alpine
+
 WORKDIR /app
+ENV NODE_ENV=production
+
+# Install deps
 COPY package*.json ./
-RUN npm install --production
-COPY index.js ./
-ENV PORT=4000
+RUN npm ci
+
+# Build TS → JS
+COPY tsconfig.json ./
+COPY src ./src
+RUN npm run build
+
 EXPOSE 4000
-CMD ["node", "index.js"]
+CMD ["node", "dist/index.js"]
