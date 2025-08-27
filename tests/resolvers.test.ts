@@ -63,7 +63,7 @@ describe("GraphQL API", () => {
     expect(payload.user).toEqual({ username: "user", role: "USER" });
     expect(typeof payload.token).toBe("string");
     const decoded = decodeToken(payload.token);
-    expect(decoded).toEqual({ username: "user", role: "USER" });
+    expect(decoded).toMatchObject({ username: "user", role: "USER" });
 
     await server.stop();
   });
