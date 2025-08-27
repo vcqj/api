@@ -1,16 +1,18 @@
 FROM node:20-alpine
-
 WORKDIR /app
-ENV NODE_ENV=production
 
-# Install deps
+# install deps INCLUDING dev (needed for tsc)
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --include=dev
 
-# Build TS → JS
+# build TS → JS
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
+
+# drop dev deps and switch to production
+RUN npm prune --omit=dev
+ENV NODE_ENV=production
 
 EXPOSE 4000
 CMD ["node", "dist/index.js"]
