@@ -72,7 +72,7 @@ function createToken(user: User) {
 }
 
 // --- Resolvers (with dependencies injected) ---
-const resolvers = createResolvers({ users, todos, logger, createToken });
+const resolvers = createResolvers({ users, todos, logger, createToken, makeID: uuidv4 });
 
 // --- Server bootstrap ---
 const app = express();

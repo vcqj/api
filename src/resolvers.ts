@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type pino from "pino";
 import type { GraphQLContext } from "./index.js";
 
@@ -17,9 +18,11 @@ type Deps = {
   todos: Todo[];
   logger: pino.Logger;
   createToken: (user: User) => string;
+  makeID?: () => string;
 };
 
-export function createResolvers({ users, todos, logger, createToken }: Deps) {
+export function createResolvers({ users, todos, logger, createToken, makeID }: Deps) {
+  const genID = makeID || (() => randomUUID());
   function authGuard(ctx: GraphQLContext): asserts ctx is { user: SafeUser } {
     if (!ctx.user) throw new Error("Not authenticated");
   }
@@ -59,12 +62,7 @@ export function createResolvers({ users, todos, logger, createToken }: Deps) {
       ) => {
         authGuard(ctx);
         const todo: Todo = {
-          id: crypto.randomUUID
-            ? crypto.randomUUID()
-            : // fallback: keep parity with index.ts where data is seeded
-              // (if needed, you can replace with uuidv4 and pass via deps)
-              (Math.random().toString(36).slice(2) +
-                Math.random().toString(36).slice(2)) as string,
+          id: genID(),
           text,
           done: false,
           createdAt: new Date().toISOString(),
